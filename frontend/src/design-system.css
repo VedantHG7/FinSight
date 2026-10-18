@@ -1732,13 +1732,25 @@ tbody tr:last-child td {
 .upload-sheet-guide { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(230px, .85fr); gap: 24px; margin: 22px 0; align-items: start; }
 .upload-sheet-figure { min-width: 0; margin: 0; }
 .upload-sheet-frame { height: 460px; overflow: auto; border: 1px solid #dce5e3; border-radius: 12px; background: #fff; box-shadow: 0 10px 28px rgba(24, 42, 48, .08); }
-.upload-sheet-frame img { display: block; width: 1050px; max-width: none; height: auto; }
+.upload-sheet-artwork { width: 1050px; position: relative; }
+.upload-sheet-artwork img { display: block; width: 100%; height: auto; }
+.upload-sheet-marker { position: absolute; transform: translate(-50%, -50%); width: 26px; height: 26px; display: grid; place-items: center; z-index: 1; border: 2px solid #fff; border-radius: 50%; background: #b43d24; box-shadow: 0 2px 8px rgba(26, 35, 41, .35); color: #fff; font-size: 12px; font-weight: 800; pointer-events: none; }
 .upload-sheet-figure figcaption { margin-top: 9px; font-size: 12px; color: var(--muted); line-height: 1.5; }
 .upload-sheet-figure figcaption a { color: var(--teal-700, #147565); font-weight: 650; }
 .upload-sheet-key { display: grid; gap: 10px; }
 .upload-sheet-key > div { display: flex; gap: 11px; padding: 13px; border: 1px solid #dce5e3; border-radius: 11px; background: #f7faf9; }
-.upload-sheet-key-number { flex: 0 0 24px; width: 24px; height: 24px; display: grid; place-items: center; border-radius: 50%; background: #147565; color: #fff; font-size: 12px; font-weight: 750; }
+.upload-sheet-key-number { flex: 0 0 24px; width: 24px; height: 24px; display: grid; place-items: center; border-radius: 50%; background: #b43d24; color: #fff; font-size: 12px; font-weight: 750; }
 .upload-sheet-key p { margin: 0; font-size: 13px; line-height: 1.5; }
+.upload-year-example { padding: 20px; margin: 4px 0 20px; border: 1px solid #dce5e3; border-radius: 12px; background: #f7faf9; }
+.upload-year-example .eyebrow { margin: 0 0 4px; }
+.upload-year-example h3 { margin: 0 0 5px; }
+.upload-year-example p { margin-top: 0; font-size: 13px; line-height: 1.55; }
+.upload-year-table { overflow-x: auto; border: 1px solid #dce5e3; border-radius: 9px; background: #fff; }
+.upload-year-table table { width: 100%; min-width: 570px; border-collapse: collapse; font-size: 12px; }
+.upload-year-table th, .upload-year-table td { padding: 10px 12px; border-bottom: 1px solid #e4ece9; text-align: left; white-space: nowrap; }
+.upload-year-table tbody tr:last-child th, .upload-year-table tbody tr:last-child td { border-bottom: 0; }
+.upload-year-table thead th { background: #e8f2ef; color: #1e4944; }
+.upload-year-example .upload-year-tip { margin: 12px 0 0; color: #304b52; }
 .upload-format-guide .upload-help { margin-bottom: 0; }
 .upload-preview .drop-zone { margin: 20px 0; }
 .preview-table { overflow: auto; max-height: 480px; margin: 24px 0; border: 1px solid #dce5e3; border-radius: 12px; }
@@ -1752,4 +1764,4 @@ tbody tr:last-child td {
 .upload-preview { grid-template-columns: minmax(0, 1fr); }
 .upload-preview > *, .upload-preview .finding-card { min-width: 0; overflow-wrap: anywhere; }
 @media(max-width:800px) { .upload-sheet-guide { grid-template-columns: minmax(0, 1fr); } .upload-sheet-key { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-@media(max-width:600px) { .upload-format-heading { flex-direction: column; } .upload-format-heading .secondary-button { width: 100%; } .upload-sheet-frame { height: 380px; } .upload-sheet-key { grid-template-columns: minmax(0, 1fr); } }
+@media(max-width:600px) { .upload-format-heading { flex-direction: column; } .upload-format-heading .secondary-button { width: 100%; } .upload-sheet-frame { height: 380px; } .upload-sheet-key { grid-template-columns: minmax(0, 1fr); } .upload-year-table table, .upload-year-table tbody { display: block; min-width: 0; font-size: 11px; } .upload-year-table thead { display: none; } .upload-year-table tbody tr { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); } .upload-year-table tbody th { grid-column: 1 / -1; background: #e8f2ef; } .upload-year-table th, .upload-year-table td { padding: 8px; white-space: normal; } .upload-year-table tbody td::before { display: block; margin-bottom: 3px; color: #486660; font-size: 10px; font-weight: 750; } .upload-year-table tbody td:first-of-type::before { content: 'FY 2025 · B'; } .upload-year-table tbody td:last-of-type::before { content: 'FY 2024 · C'; } }

@@ -12,9 +12,14 @@ try {
   await page.route('**/api/analysis/preview', r => r.fulfill({json: preview}))
   await page.goto('http://127.0.0.1:5173/app/new')
   await page.getByRole('heading', {name: '1. Prepare your workbook'}).waitFor()
-  const guideImage = page.getByRole('img', {name: /Blank Data Sheet with company name/})
+  const guideImage = page.getByRole('img', {name: /Blank Data Sheet/})
   assert(await guideImage.evaluate(image => image.complete && image.naturalWidth > 0), 'Workbook picture must load')
-  await page.getByRole('link', {name: 'Open full-size picture'}).waitFor()
+  assert.equal(await page.locator('.upload-sheet-marker').count(), 12, 'Workbook picture must mark the key cells and sections')
+  await page.getByRole('heading', {name: 'One column = one financial year'}).waitFor()
+  await page.getByText('B16 · 31 Mar 2025').waitFor()
+  await page.getByText('B56 · 31 Mar 2025').waitFor()
+  await page.getByText('B81 · 31 Mar 2025').waitFor()
+  await page.getByRole('link', {name: 'Open the sheet full size'}).waitFor()
   const [templateDownload] = await Promise.all([
     page.waitForEvent('download'),
     page.getByRole('link', {name: 'Download blank template'}).click(),

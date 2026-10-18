@@ -3,6 +3,21 @@ import { Navigate, useNavigate } from 'react-router-dom'
 import { AccountBar, useAuth } from './Accounts'
 import { api } from './api'
 
+const sheetMarkers = [
+  { number: 1, left: '24%', top: '1.5%' },
+  { number: 2, left: '12%', top: '5.4%' },
+  { number: 3, left: '12%', top: '16.2%' },
+  { number: 3, left: '12%', top: '42.8%' },
+  { number: 3, left: '12%', top: '58.1%' },
+  { number: 3, left: '12%', top: '84.7%' },
+  { number: 4, left: '22%', top: '17.4%' },
+  { number: 4, left: '22%', top: '59.1%' },
+  { number: 4, left: '22%', top: '85.7%' },
+  { number: 5, left: '12%', top: '18.5%' },
+  { number: 6, left: '27%', top: '18.5%' },
+  { number: 7, left: '12%', top: '96.1%' },
+]
+
 export default function UploadPreview() {
   const { account } = useAuth(), navigate = useNavigate()
   const [file, setFile] = useState(null), [preview, setPreview] = useState(null)
@@ -29,17 +44,21 @@ export default function UploadPreview() {
       <div className="upload-format-heading"><div><h2 id="workbook-format-title">1. Prepare your workbook</h2><p>This is the blank version of the example workbook. It has the same sheets, row names, and columns. Fill in one company’s data, then upload the Excel file (up to 10 MB).</p></div><a className="secondary-button" href="/data/FinSight_Template.xlsx" download="FinSight_Template.xlsx">Download blank template</a></div>
       <div className="upload-sheet-guide">
         <figure className="upload-sheet-figure">
-          <div className="upload-sheet-frame" tabIndex="0" role="region" aria-label="Scrollable picture of the blank Data Sheet template"><img src="/data/FinSight_Template_Preview.png" alt="Blank Data Sheet with company name in B1, Report Date rows for each financial section, metric names in column A, and empty value columns B through K" /></div>
-          <figcaption>Picture of the actual blank template · scroll to see all four sections. <a href="/data/FinSight_Template_Preview.png" target="_blank" rel="noreferrer">Open full-size picture</a></figcaption>
+          <div className="upload-sheet-frame" tabIndex="0" role="region" aria-label="Scrollable, numbered picture of the blank Data Sheet template"><div className="upload-sheet-artwork"><img src="/data/FinSight_Template_Preview.png" alt="Blank Data Sheet. Numbered markers point to the company name, section titles, reporting date rows, metric labels, and empty amount cells." />{sheetMarkers.map((marker, index) => <span className="upload-sheet-marker" style={{ left: marker.left, top: marker.top }} aria-hidden="true" key={index}>{marker.number}</span>)}</div></div>
+          <figcaption>Numbered dots point to cells in the actual template. Scroll the picture to see Balance Sheet and Cash Flow. <a href="/data/FinSight_Template_Preview.png" target="_blank" rel="noreferrer">Open the sheet full size</a></figcaption>
         </figure>
-        <div className="upload-sheet-key" aria-label="How to fill the template">
-          <div><span className="upload-sheet-key-number">1</span><p><strong>Company name</strong><br />Enter the name in cell <strong>B1</strong>.</p></div>
-          <div><span className="upload-sheet-key-number">2</span><p><strong>Reporting dates</strong><br />Fill the blue <strong>Report Date</strong> rows. Put one date in each column, for example 31 Mar 2025.</p></div>
-          <div><span className="upload-sheet-key-number">3</span><p><strong>Financial values</strong><br />Keep the metric names in column <strong>A</strong>. Enter amounts under the matching dates in columns <strong>B–K</strong>.</p></div>
-          <div><span className="upload-sheet-key-number">4</span><p><strong>Four sections</strong><br />Fill Profit &amp; Loss, Quarters, Balance Sheet, and Cash Flow where data is available. Leave missing amounts blank.</p></div>
+        <div className="upload-sheet-key" aria-label="What the numbered parts mean">
+          <div><span className="upload-sheet-key-number">1</span><p><strong>Company name · B1</strong><br />Replace the blank cell with the company you are uploading. Use one company per workbook.</p></div>
+          <div><span className="upload-sheet-key-number">2</span><p><strong>META · company details</strong><br />Face Value (B7), Current Price (B8), and Market Capitalization (B9) are optional reference fields. Leave the version values in B2/B3 and the B6 formula unchanged.</p></div>
+          <div><span className="upload-sheet-key-number">3</span><p><strong>Statement sections</strong><br />The headings at <strong>A15, A40, A55, and A80</strong> group Profit &amp; Loss, Quarters, Balance Sheet, and Cash Flow. Fill the three annual sections for analysis; Quarters is optional.</p></div>
+          <div><span className="upload-sheet-key-number">4</span><p><strong>Blue Report Date rows</strong><br />These tell FinSight which financial year each column belongs to. For FY 2025, enter the full end date <strong>31 Mar 2025</strong> in <strong>B16, B56, and B81</strong>. The Quarters date row is separate.</p></div>
+          <div><span className="upload-sheet-key-number">5</span><p><strong>Metric names · column A</strong><br />Sales, Net profit, Borrowings, and the other row names say what each number means. Keep their names and order.</p></div>
+          <div><span className="upload-sheet-key-number">6</span><p><strong>Your figures · columns B–K</strong><br />Enter each amount where its metric row meets its year column. For example, <strong>B17</strong> is Sales for the date in <strong>B16</strong>. Leave unavailable values blank.</p></div>
+          <div><span className="upload-sheet-key-number">7</span><p><strong>PRICE and DERIVED · bottom rows</strong><br />These are optional reference fields. FinSight does not use them for the annual analysis.</p></div>
         </div>
       </div>
-      <p className="upload-help">Only annual figures from the Data Sheet are used for analysis. Enter the same year under Profit &amp; Loss, Balance Sheet, and Cash Flow. Quarters and the formula sheets are included for reference.</p>
+      <div className="upload-year-example"><div><p className="eyebrow">How year-wise data works</p><h3>One column = one financial year</h3><p>For the same year, repeat its date in all three annual Report Date rows. Then put that year’s figures below those dates in the same column.</p></div><div className="upload-year-table" role="region" aria-label="Example of matching annual reporting dates"><table><thead><tr><th scope="col">Data Sheet section</th><th scope="col">Column B · FY 2025</th><th scope="col">Column C · FY 2024</th></tr></thead><tbody><tr><th scope="row">Profit &amp; Loss</th><td>B16 · 31 Mar 2025</td><td>C16 · 31 Mar 2024</td></tr><tr><th scope="row">Balance Sheet</th><td>B56 · 31 Mar 2025</td><td>C56 · 31 Mar 2024</td></tr><tr><th scope="row">Cash Flow</th><td>B81 · 31 Mar 2025</td><td>C81 · 31 Mar 2024</td></tr></tbody></table></div><p className="upload-year-tip">Example: the Sales amount in B17 belongs to FY 2025; the Sales amount in C17 belongs to FY 2024. Type complete Excel dates in the blue rows, not just “2025” or “2024”. If you have only one year of data, fill column B and leave later year columns empty.</p></div>
+      <p className="upload-help">FinSight analyses the annual Profit &amp; Loss, Balance Sheet, and Cash Flow figures in the <strong>Data Sheet</strong>. Quarters and the other formula sheets are there for reference. Use one consistent currency and scale for monetary amounts.</p>
     </section>
     <section className="finding-card"><h2>2. Choose a workbook</h2><p>Only the Data Sheet is analysed. Other sheets are ignored.</p>
       <label className="drop-zone" onDragOver={e => e.preventDefault()} onDrop={e => { e.preventDefault(); if (!busy) select(e.dataTransfer.files?.[0] || null) }}>
