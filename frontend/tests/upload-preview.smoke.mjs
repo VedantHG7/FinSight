@@ -12,6 +12,9 @@ try {
   await page.route('**/api/analysis/preview', r => r.fulfill({json: preview}))
   await page.goto('http://127.0.0.1:5173/app/new')
   await page.getByRole('heading', {name: '1. Prepare your workbook'}).waitFor()
+  const guideImage = page.getByRole('img', {name: /Blank Data Sheet with company name/})
+  assert(await guideImage.evaluate(image => image.complete && image.naturalWidth > 0), 'Workbook picture must load')
+  await page.getByRole('link', {name: 'Open full-size picture'}).waitFor()
   const [templateDownload] = await Promise.all([
     page.waitForEvent('download'),
     page.getByRole('link', {name: 'Download blank template'}).click(),

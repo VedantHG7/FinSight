@@ -14,27 +14,29 @@ TEMPLATE = Path(__file__).resolve().parents[2] / 'frontend' / 'public' / 'data' 
 class UploadPreviewTests(unittest.TestCase):
     def test_blank_template_accepts_annual_data_and_cash_flow_headings(self):
         from app.services.analysis_service import AnalysisService
+        self.assertEqual(load_workbook(TEMPLATE).sheetnames, [
+            'Profit & Loss', 'Quarters', 'Balance Sheet', 'Cash Flow', 'Customization', 'Data Sheet'])
         for heading in ('CASH FLOW', 'CASH FLOW:'):
             with self.subTest(heading=heading):
                 book = load_workbook(TEMPLATE)
                 sheet = book['Data Sheet']
                 self.assertIsNone(sheet['B1'].value)
-                self.assertIsNone(sheet['B9'].value)
+                self.assertIsNone(sheet['B17'].value)
+                self.assertEqual(sheet['A17'].value, 'Sales')
+                self.assertEqual(sheet['A82'].value, 'Cash from Operating Activity')
                 sheet['B1'] = 'Example Ltd'
-                sheet['B2'] = 'INR crore'
-                sheet['A41'] = heading
-                for cell in ('B8', 'B26', 'B42'):
+                sheet['A80'] = heading
+                for cell in ('B16', 'B56', 'B81'):
                     sheet[cell] = datetime(2025, 3, 31)
-                for cell, value in {'B9': 100, 'B20': 22, 'B21': 18, 'B22': 12,
-                                    'B27': 20, 'B28': 30, 'B29': 10, 'B31': 80,
-                                    'B36': 80, 'B43': 15, 'B44': -5, 'B45': -3,
-                                    'B46': 7}.items():
+                for cell, value in {'B17': 100, 'B28': 22, 'B29': 10, 'B30': 12,
+                                    'B57': 20, 'B58': 30, 'B59': 10, 'B61': 80,
+                                    'B66': 80, 'B82': 15, 'B83': -5, 'B84': -3,
+                                    'B85': 7}.items():
                     sheet[cell] = value
                 result = self.preview(book)
                 self.assertTrue(result['valid'], result)
                 self.assertEqual(result['company'], 'Example Ltd')
                 self.assertEqual(result['years'], [2025])
-                self.assertEqual(result['financial_units']['label'], 'INR crore')
                 self.assertEqual(result['rows'][0]['Cash from Operating Activity'], 15)
                 with TemporaryDirectory() as directory:
                     path = Path(directory) / 'upload.xlsx'

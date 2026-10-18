@@ -1729,7 +1729,16 @@ tbody tr:last-child td {
 .upload-format-heading { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; }
 .upload-format-heading h2 { margin-top: 0; }
 .upload-format-heading .secondary-button { flex-shrink: 0; }
-.upload-format-steps { display: grid; gap: 9px; margin: 18px 0; padding-left: 22px; list-style: decimal; }
+.upload-sheet-guide { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(230px, .85fr); gap: 24px; margin: 22px 0; align-items: start; }
+.upload-sheet-figure { min-width: 0; margin: 0; }
+.upload-sheet-frame { height: 460px; overflow: auto; border: 1px solid #dce5e3; border-radius: 12px; background: #fff; box-shadow: 0 10px 28px rgba(24, 42, 48, .08); }
+.upload-sheet-frame img { display: block; width: 1050px; max-width: none; height: auto; }
+.upload-sheet-figure figcaption { margin-top: 9px; font-size: 12px; color: var(--muted); line-height: 1.5; }
+.upload-sheet-figure figcaption a { color: var(--teal-700, #147565); font-weight: 650; }
+.upload-sheet-key { display: grid; gap: 10px; }
+.upload-sheet-key > div { display: flex; gap: 11px; padding: 13px; border: 1px solid #dce5e3; border-radius: 11px; background: #f7faf9; }
+.upload-sheet-key-number { flex: 0 0 24px; width: 24px; height: 24px; display: grid; place-items: center; border-radius: 50%; background: #147565; color: #fff; font-size: 12px; font-weight: 750; }
+.upload-sheet-key p { margin: 0; font-size: 13px; line-height: 1.5; }
 .upload-format-guide .upload-help { margin-bottom: 0; }
 .upload-preview .drop-zone { margin: 20px 0; }
 .preview-table { overflow: auto; max-height: 480px; margin: 24px 0; border: 1px solid #dce5e3; border-radius: 12px; }
@@ -1742,4 +1751,5 @@ tbody tr:last-child td {
 .preview-confirm input { width: auto; margin-top: 4px; flex-shrink: 0; }
 .upload-preview { grid-template-columns: minmax(0, 1fr); }
 .upload-preview > *, .upload-preview .finding-card { min-width: 0; overflow-wrap: anywhere; }
-@media(max-width:600px) { .upload-format-heading { flex-direction: column; } .upload-format-heading .secondary-button { width: 100%; } }
+@media(max-width:800px) { .upload-sheet-guide { grid-template-columns: minmax(0, 1fr); } .upload-sheet-key { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media(max-width:600px) { .upload-format-heading { flex-direction: column; } .upload-format-heading .secondary-button { width: 100%; } .upload-sheet-frame { height: 380px; } .upload-sheet-key { grid-template-columns: minmax(0, 1fr); } }

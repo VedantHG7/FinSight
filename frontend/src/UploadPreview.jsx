@@ -26,13 +26,20 @@ export default function UploadPreview() {
   return <div className="workspace"><AccountBar /><main className="workspace-main upload-preview">
     <div className="page-title"><p className="eyebrow">New analysis · Review your inputs</p><h1>Upload a financial workbook.</h1><p>Check the format, preview the detected data, then confirm when it looks right. Analysis starts only after your confirmation.</p></div>
     <section className="finding-card upload-format-guide" aria-labelledby="workbook-format-title">
-      <div className="upload-format-heading"><div><h2 id="workbook-format-title">1. Prepare your workbook</h2><p>Use an Excel file (.xlsx or .xls) for one company, up to 10 MB.</p></div><a className="secondary-button" href="/data/FinSight_Template.xlsx" download="FinSight_Template.xlsx">Download blank template</a></div>
-      <ol className="upload-format-steps">
-        <li>Name the financial sheet <strong>Data Sheet</strong> and enter the company name in <strong>B1</strong>.</li>
-        <li>Use the section headings <strong>PROFIT &amp; LOSS</strong>, <strong>BALANCE SHEET</strong>, and <strong>CASH FLOW</strong>. Put a <strong>Report Date</strong> row below each heading, with one full annual date per column, such as 2025-03-31.</li>
-        <li>Put metric names in column A and numbers under the matching dates. Leave unavailable amounts blank; add one currency and scale near the top, such as INR crore.</li>
-      </ol>
-      <p className="upload-help">For useful coverage, include Sales, Net profit, Equity Share Capital, Reserves, Borrowings, Total Assets, Total Liabilities, and the four cash flow rows. Missing values can reduce the checks and model coverage.</p>
+      <div className="upload-format-heading"><div><h2 id="workbook-format-title">1. Prepare your workbook</h2><p>This is the blank version of the example workbook. It has the same sheets, row names, and columns. Fill in one company’s data, then upload the Excel file (up to 10 MB).</p></div><a className="secondary-button" href="/data/FinSight_Template.xlsx" download="FinSight_Template.xlsx">Download blank template</a></div>
+      <div className="upload-sheet-guide">
+        <figure className="upload-sheet-figure">
+          <div className="upload-sheet-frame" tabIndex="0" role="region" aria-label="Scrollable picture of the blank Data Sheet template"><img src="/data/FinSight_Template_Preview.png" alt="Blank Data Sheet with company name in B1, Report Date rows for each financial section, metric names in column A, and empty value columns B through K" /></div>
+          <figcaption>Picture of the actual blank template · scroll to see all four sections. <a href="/data/FinSight_Template_Preview.png" target="_blank" rel="noreferrer">Open full-size picture</a></figcaption>
+        </figure>
+        <div className="upload-sheet-key" aria-label="How to fill the template">
+          <div><span className="upload-sheet-key-number">1</span><p><strong>Company name</strong><br />Enter the name in cell <strong>B1</strong>.</p></div>
+          <div><span className="upload-sheet-key-number">2</span><p><strong>Reporting dates</strong><br />Fill the blue <strong>Report Date</strong> rows. Put one date in each column, for example 31 Mar 2025.</p></div>
+          <div><span className="upload-sheet-key-number">3</span><p><strong>Financial values</strong><br />Keep the metric names in column <strong>A</strong>. Enter amounts under the matching dates in columns <strong>B–K</strong>.</p></div>
+          <div><span className="upload-sheet-key-number">4</span><p><strong>Four sections</strong><br />Fill Profit &amp; Loss, Quarters, Balance Sheet, and Cash Flow where data is available. Leave missing amounts blank.</p></div>
+        </div>
+      </div>
+      <p className="upload-help">Only annual figures from the Data Sheet are used for analysis. Enter the same year under Profit &amp; Loss, Balance Sheet, and Cash Flow. Quarters and the formula sheets are included for reference.</p>
     </section>
     <section className="finding-card"><h2>2. Choose a workbook</h2><p>Only the Data Sheet is analysed. Other sheets are ignored.</p>
       <label className="drop-zone" onDragOver={e => e.preventDefault()} onDrop={e => { e.preventDefault(); if (!busy) select(e.dataTransfer.files?.[0] || null) }}>
