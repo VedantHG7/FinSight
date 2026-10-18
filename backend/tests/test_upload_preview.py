@@ -1,14 +1,49 @@
 import io
 import unittest
+from datetime import datetime
 from pathlib import Path
+from tempfile import TemporaryDirectory
 from openpyxl import load_workbook, Workbook
 from fastapi import UploadFile
 from app.services.upload_preview import preview_upload
 
 SAMPLE = Path(__file__).resolve().parents[2] / 'client_data.xlsx'
+TEMPLATE = Path(__file__).resolve().parents[2] / 'frontend' / 'public' / 'data' / 'FinSight_Template.xlsx'
 
 
 class UploadPreviewTests(unittest.TestCase):
+    def test_blank_template_accepts_annual_data_and_cash_flow_headings(self):
+        from app.services.analysis_service import AnalysisService
+        for heading in ('CASH FLOW', 'CASH FLOW:'):
+            with self.subTest(heading=heading):
+                book = load_workbook(TEMPLATE)
+                sheet = book['Data Sheet']
+                self.assertIsNone(sheet['B1'].value)
+                self.assertIsNone(sheet['B9'].value)
+                sheet['B1'] = 'Example Ltd'
+                sheet['B2'] = 'INR crore'
+                sheet['A41'] = heading
+                for cell in ('B8', 'B26', 'B42'):
+                    sheet[cell] = datetime(2025, 3, 31)
+                for cell, value in {'B9': 100, 'B20': 22, 'B21': 18, 'B22': 12,
+                                    'B27': 20, 'B28': 30, 'B29': 10, 'B31': 80,
+                                    'B36': 80, 'B43': 15, 'B44': -5, 'B45': -3,
+                                    'B46': 7}.items():
+                    sheet[cell] = value
+                result = self.preview(book)
+                self.assertTrue(result['valid'], result)
+                self.assertEqual(result['company'], 'Example Ltd')
+                self.assertEqual(result['years'], [2025])
+                self.assertEqual(result['financial_units']['label'], 'INR crore')
+                self.assertEqual(result['rows'][0]['Cash from Operating Activity'], 15)
+                with TemporaryDirectory() as directory:
+                    path = Path(directory) / 'upload.xlsx'
+                    book.save(path)
+                    service = AnalysisService(None)
+                    service._extract_workbook(path)
+                    cash = next(cell for cell in service.provenance if cell['source_label'] == 'Cash from Operating Activity')
+                    self.assertEqual(cash['statement'], 'Cash Flow')
+
     def test_legacy_xls_preview_and_extraction(self):
         from app.services.analysis_service import AnalysisService
         sample = Path(__file__).parent / 'fixtures' / 'legacy_sample.xls'

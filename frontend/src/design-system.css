@@ -1726,6 +1726,11 @@ tbody tr:last-child td {
 @media(max-width:560px) { .evidence-values { grid-template-columns: 1fr; } .evidence-pairs > div { flex-wrap: wrap; } }
 
 .upload-preview .finding-card { margin-bottom: 24px; }
+.upload-format-heading { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; }
+.upload-format-heading h2 { margin-top: 0; }
+.upload-format-heading .secondary-button { flex-shrink: 0; }
+.upload-format-steps { display: grid; gap: 9px; margin: 18px 0; padding-left: 22px; list-style: decimal; }
+.upload-format-guide .upload-help { margin-bottom: 0; }
 .upload-preview .drop-zone { margin: 20px 0; }
 .preview-table { overflow: auto; max-height: 480px; margin: 24px 0; border: 1px solid #dce5e3; border-radius: 12px; }
 .preview-table table { width: 100%; border-collapse: collapse; white-space: nowrap; }
@@ -1737,3 +1742,4 @@ tbody tr:last-child td {
 .preview-confirm input { width: auto; margin-top: 4px; flex-shrink: 0; }
 .upload-preview { grid-template-columns: minmax(0, 1fr); }
 .upload-preview > *, .upload-preview .finding-card { min-width: 0; overflow-wrap: anywhere; }
+@media(max-width:600px) { .upload-format-heading { flex-direction: column; } .upload-format-heading .secondary-button { width: 100%; } }

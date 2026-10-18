@@ -52,7 +52,7 @@ def preview_upload(upload):
                 sheet = book.parse('Data Sheet', header=None)
                 section = ''
                 for index, row in sheet.iterrows():
-                    label = _safe_string(row.iloc[0]).upper()
+                    label = _safe_string(row.iloc[0]).upper().rstrip(':').strip()
                     if label in {'PROFIT & LOSS', 'BALANCE SHEET', 'CASH FLOW', 'QUARTERS'}:
                         section = label
                     if label != 'REPORT DATE' or section not in {'PROFIT & LOSS', 'BALANCE SHEET', 'CASH FLOW'}:

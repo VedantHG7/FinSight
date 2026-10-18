@@ -24,15 +24,24 @@ export default function UploadPreview() {
     } catch (err) { setError(err.message) } finally { setBusy(false) }
   }
   return <div className="workspace"><AccountBar /><main className="workspace-main upload-preview">
-    <div className="page-title"><p className="eyebrow">New analysis · Review your inputs</p><h1>Check your workbook before analysis.</h1><p>Preview the company, years and source values. Analysis starts only after you review and confirm.</p></div>
-    <section className="finding-card"><h2>1. Choose a workbook</h2><p>One company · Up to 10 MB · .xlsx or .xls · Financial data on Data Sheet</p>
+    <div className="page-title"><p className="eyebrow">New analysis · Review your inputs</p><h1>Upload a financial workbook.</h1><p>Check the format, preview the detected data, then confirm when it looks right. Analysis starts only after your confirmation.</p></div>
+    <section className="finding-card upload-format-guide" aria-labelledby="workbook-format-title">
+      <div className="upload-format-heading"><div><h2 id="workbook-format-title">1. Prepare your workbook</h2><p>Use an Excel file (.xlsx or .xls) for one company, up to 10 MB.</p></div><a className="secondary-button" href="/data/FinSight_Template.xlsx" download="FinSight_Template.xlsx">Download blank template</a></div>
+      <ol className="upload-format-steps">
+        <li>Name the financial sheet <strong>Data Sheet</strong> and enter the company name in <strong>B1</strong>.</li>
+        <li>Use the section headings <strong>PROFIT &amp; LOSS</strong>, <strong>BALANCE SHEET</strong>, and <strong>CASH FLOW</strong>. Put a <strong>Report Date</strong> row below each heading, with one full annual date per column, such as 2025-03-31.</li>
+        <li>Put metric names in column A and numbers under the matching dates. Leave unavailable amounts blank; add one currency and scale near the top, such as INR crore.</li>
+      </ol>
+      <p className="upload-help">For useful coverage, include Sales, Net profit, Equity Share Capital, Reserves, Borrowings, Total Assets, Total Liabilities, and the four cash flow rows. Missing values can reduce the checks and model coverage.</p>
+    </section>
+    <section className="finding-card"><h2>2. Choose a workbook</h2><p>Only the Data Sheet is analysed. Other sheets are ignored.</p>
       <label className="drop-zone" onDragOver={e => e.preventDefault()} onDrop={e => { e.preventDefault(); if (!busy) select(e.dataTransfer.files?.[0] || null) }}>
         <strong>{file?.name || 'Choose or drop a workbook'}</strong><input aria-label="Choose financial workbook" type="file" accept=".xlsx,.xls" disabled={busy} onChange={e => { select(e.target.files?.[0] || null); e.target.value = '' }} />
       </label><button className="primary-button slim" disabled={busy || !file} onClick={() => submit()}>{busy ? 'Working…' : 'Preview workbook'}</button>
     </section>
     {error && <p role="alert" className="error-text">{error}</p>}
     {preview && <section className="finding-card" aria-label="Workbook preview">
-      <h2>2. Review detected data</h2><p><strong>{preview.company || 'Company not detected'}</strong></p><p>Reporting years: {preview.years.join(', ') || 'Not detected'}</p><p>Monetary units: <strong>{preview.financial_units.label}</strong></p><p className="upload-help">Source values are shown as supplied. No currency conversion or scaling is applied. Ratios and share counts retain their own units.</p>
+      <h2>3. Review detected data</h2><p><strong>{preview.company || 'Company not detected'}</strong></p><p>Reporting years: {preview.years.join(', ') || 'Not detected'}</p><p>Monetary units: <strong>{preview.financial_units.label}</strong></p><p className="upload-help">Source values are shown as supplied. No currency conversion or scaling is applied. Ratios and share counts retain their own units.</p>
       {preview.errors.length > 0 && <div role="alert"><h3>Fix before continuing</h3><ul>{preview.errors.map(t => <li key={t}>{t}</li>)}</ul></div>}
       {preview.invalid_cells.length > 0 && <ul>{preview.invalid_cells.map((c, i) => <li key={i}>Data Sheet!{c.cell} · {c.year} · {c.source_label}: “{String(c.value)}”</li>)}</ul>}
       {preview.warnings.length > 0 && <div><h3>Review these warnings</h3><ul>{preview.warnings.map(t => <li key={t}>{t}</li>)}</ul></div>}

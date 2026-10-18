@@ -293,7 +293,7 @@ class AnalysisService:
         section_map = {"PROFIT & LOSS": "Profit & Loss", "BALANCE SHEET": "Balance Sheet", "CASH FLOW": "Cash Flow", "QUARTERS": "Quarters"}
         extracted: dict[str, list[dict[str, Any]]] = {}
         for label, statement_name in section_map.items():
-            start = next((i for i in range(len(data_df)) if _safe_string(data_df.iloc[i, 0]).upper() == label), None)
+            start = next((i for i in range(len(data_df)) if _safe_string(data_df.iloc[i, 0]).upper().rstrip(':').strip() == label), None)
             if start is None:
                 continue
             report_row = next((i for i in range(start + 1, min(len(data_df), start + 30)) if _safe_string(data_df.iloc[i, 0]).lower() == "report date"), None)
@@ -312,7 +312,7 @@ class AnalysisService:
                     metric = _safe_string(data_df.iloc[row, 0])
                     if not metric:
                         continue
-                    if metric.upper() in section_map:
+                    if metric.upper().rstrip(':').strip() in section_map:
                         break
                     if statement_name == "Balance Sheet" and metric == "Total":
                         total_counter += 1

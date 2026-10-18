@@ -11,6 +11,12 @@ try {
   const preview = {valid: true, file_hash: 'abc', company: 'Sample company', years: [2024, 2025], financial_units: {status: 'unknown', label: 'Source units unspecified'}, errors: [], warnings: ['Some key metrics are unavailable.'], invalid_cells: [], missing_metrics: [{year: 2025, metrics: ['Borrowings']}], columns: ['Sales', 'Net profit'], rows: [{Year: 2024, Sales: 100, 'Net profit': 10}, {Year: 2025, Sales: 120, 'Net profit': null}]}
   await page.route('**/api/analysis/preview', r => r.fulfill({json: preview}))
   await page.goto('http://127.0.0.1:5173/app/new')
+  await page.getByRole('heading', {name: '1. Prepare your workbook'}).waitFor()
+  const [templateDownload] = await Promise.all([
+    page.waitForEvent('download'),
+    page.getByRole('link', {name: 'Download blank template'}).click(),
+  ])
+  assert.equal(templateDownload.suggestedFilename(), 'FinSight_Template.xlsx')
   await page.getByLabel('Choose financial workbook').setInputFiles('../client_data.xlsx')
   await page.getByRole('button', {name: 'Preview workbook'}).click()
   const start = page.getByRole('button', {name: 'Confirm and start analysis'})
