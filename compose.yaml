@@ -1,0 +1,107 @@
+name: finsight
+
+x-logging: &logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+x-backend: &backend
+  image: finsight-api:local
+  build:
+    context: .
+    dockerfile: deploy/api.Dockerfile
+  restart: unless-stopped
+  init: true
+  environment: &backend-env
+    DATABASE_URL: postgresql+psycopg://finsight:${POSTGRES_PASSWORD:?Run deploy/configure.py first}@db:5432/finsight
+    SECRET_KEY: ${SECRET_KEY:?Run deploy/configure.py first}
+    DEBUG: "false"
+    COOKIE_SECURE: "true"
+    PUBLIC_APP_URL: https://${APP_DOMAIN:?Set APP_DOMAIN}
+    BACKEND_CORS_ORIGINS: '["https://${APP_DOMAIN:?Set APP_DOMAIN}"]'
+    STORAGE_BACKEND: local
+    STORAGE_BASE_PATH: /data/storage
+    ANALYSIS_WORKSPACE_PATH: /data/analyses
+    SMTP_HOST: ${SMTP_HOST:-}
+    SMTP_PORT: ${SMTP_PORT:-587}
+    SMTP_USERNAME: ${SMTP_USERNAME:-}
+    SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+    SMTP_FROM_EMAIL: ${SMTP_FROM_EMAIL:-}
+    SMTP_USE_TLS: "true"
+    SMTP_USE_SSL: "false"
+    # Keep numerical libraries from oversubscribing a small free VM.
+    OMP_NUM_THREADS: "1"
+    OPENBLAS_NUM_THREADS: "1"
+    NUMBA_NUM_THREADS: "1"
+  volumes:
+    - artifacts:/data
+  logging: *logging
+
+services:
+  db:
+    image: postgres:17-bookworm
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: finsight
+      POSTGRES_USER: finsight
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Run deploy/configure.py first}
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U finsight -d finsight"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+    logging: *logging
+
+  api:
+    <<: *backend
+    # Only Caddy has a published port. Trust its forwarded client IP headers.
+    command: ["python", "-m", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--proxy-headers", "--forwarded-allow-ips", "*"]
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - "import urllib.request; from sqlalchemy import text; from app.db.database import engine; urllib.request.urlopen('http://127.0.0.1:8000/api/health', timeout=5); connection = engine.connect(); connection.execute(text('SELECT 1')); connection.close()"
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  worker:
+    <<: *backend
+    command: ["python", "-m", "app.worker"]
+    # API creates the initial schema before the worker starts.
+    depends_on:
+      api:
+        condition: service_healthy
+    stop_grace_period: 120s
+
+  web:
+    build:
+      context: .
+      dockerfile: deploy/web.Dockerfile
+    restart: unless-stopped
+    environment:
+      APP_DOMAIN: ${APP_DOMAIN:?Set APP_DOMAIN}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      api:
+        condition: service_healthy
+    logging: *logging
+
+volumes:
+  postgres:
+  artifacts:
+  caddy_data:
+  caddy_config:

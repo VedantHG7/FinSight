@@ -1,0 +1,23 @@
+# FinSight backend dependencies
+# Python 3.11+ (local runtime: 3.13)
+fastapi==0.139.0
+uvicorn[standard]==0.50.2
+pydantic==2.13.4
+pydantic-settings==2.15.0
+python-dotenv==1.2.2
+sqlalchemy==2.0.51
+alembic==1.19.1
+psycopg[binary]==3.3.4
+python-multipart==0.0.32
+pandas==2.3.3
+numpy==2.2.6
+scikit-learn==1.7.2
+joblib==1.5.3
+shap==0.49.1
+numba==0.61.2
+openpyxl==3.1.5
+xlrd==2.0.2
+bcrypt==5.0.0
+httpx==0.28.1
+
+reportlab==4.4.5

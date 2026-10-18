@@ -1,0 +1,34 @@
+.env
+.env.*
+!.env.example
+**/.env
+**/.env.*
+!**/.env.example
+**/__pycache__/
+*.py[cod]
+**/.venv/
+**/venv/
+**/node_modules/
+frontend/dist/
+**/runtime/
+output/
+tmp/
+deploy/backups/
+*.pem
+*.key
+
+# Local logs, databases, and uploaded source data
+**/logs/
+*.log
+*.db
+*.sqlite
+*.sqlite3
+/client_data.xlsx
+
+# Editor and test caches
+.vscode/
+.idea/
+**/.pytest_cache/
+**/.ruff_cache/
+**/test-results/
+**/playwright-report/

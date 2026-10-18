@@ -1,0 +1,20 @@
+{$APP_DOMAIN} {
+    encode zstd gzip
+    header X-Content-Type-Options nosniff
+    header Referrer-Policy no-referrer
+
+    handle /api/* {
+        # App enforces a 10 MiB file limit; allow multipart overhead here.
+        request_body {
+            max_size 12MB
+        }
+        reverse_proxy api:8000
+    }
+
+    handle {
+        root * /srv
+        try_files {path} /index.html
+        header Cache-Control "no-cache"
+        file_server
+    }
+}
