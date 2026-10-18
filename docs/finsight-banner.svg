@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="280" viewBox="0 0 1200 280" role="img" aria-labelledby="title desc">
+  <title id="title">FinSight</title>
+  <desc id="desc">Financial intelligence workspace, with a stylized F logo and chart lines.</desc>
+  <defs>
+    <linearGradient id="bg" x2="1" y2="1"><stop stop-color="#101c30"/><stop offset="1" stop-color="#1b3653"/></linearGradient>
+    <linearGradient id="accent" x2="1" y2="0"><stop stop-color="#78d8c0"/><stop offset="1" stop-color="#b8e9de"/></linearGradient>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M40 0H0V40" fill="none" stroke="#6e9cb2" stroke-opacity=".13"/></pattern>
+  </defs>
+  <rect width="1200" height="280" rx="24" fill="url(#bg)"/>
+  <rect width="1200" height="280" rx="24" fill="url(#grid)"/>
+  <circle cx="1050" cy="112" r="190" fill="#4bbfa8" opacity=".07"/>
+  <path d="M735 188l82-48 65 20 78-85 80 33 86-54" fill="none" stroke="url(#accent)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" opacity=".7"/>
+  <path d="M735 212l82-32 65 16 78-49 80 25 86-44" fill="none" stroke="#6da8c4" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" opacity=".45"/>
+  <g fill="url(#accent)"><circle cx="817" cy="140" r="6"/><circle cx="960" cy="75" r="6"/><circle cx="1126" cy="54" r="6"/></g>
+  <rect x="66" y="72" width="136" height="136" rx="32" fill="#263d58" stroke="#6ba99e" stroke-opacity=".45"/>
+  <path d="M109 176V106h59M109 140h42" fill="none" stroke="url(#accent)" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="234" y="143" fill="#f3faf9" font-family="Segoe UI, Arial, sans-serif" font-size="66" font-weight="700" letter-spacing="-2">FinSight</text>
+  <text x="238" y="181" fill="#a7c5d0" font-family="Segoe UI, Arial, sans-serif" font-size="20" letter-spacing="2">FINANCIAL INTELLIGENCE WORKSPACE</text>
+</svg>

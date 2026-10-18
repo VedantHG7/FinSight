@@ -1,33 +1,85 @@
-# FinSight
+<div align="center">
+  <img src="docs/finsight-banner.svg" alt="FinSight — financial intelligence workspace" width="100%" />
 
-Financial workbook analysis with audit rules, machine learning anomaly detection,
-explanations, and workspace reviews.
+  <p><strong>From financial workbook to explainable audit findings.</strong></p>
 
-## Project layout
+  <p>
+    <img src="https://img.shields.io/badge/React-18-149a91?style=flat-square&logo=react&logoColor=white" alt="React 18" />
+    <img src="https://img.shields.io/badge/FastAPI-0.139-149a91?style=flat-square&logo=fastapi&logoColor=white" alt="FastAPI 0.139" />
+    <img src="https://img.shields.io/badge/PostgreSQL-17-273e5e?style=flat-square&logo=postgresql&logoColor=white" alt="PostgreSQL 17 deployment image" />
+    <img src="https://img.shields.io/badge/Python-3.13-273e5e?style=flat-square&logo=python&logoColor=white" alt="Python 3.13 local runtime" />
+  </p>
+</div>
 
-- `frontend/`: React application.
-- `backend/`: Python API, processing worker, tests, and saved model artifacts.
-- `deploy/` and `compose.yaml`: container deployment configuration.
-- `docs/`: implementation and deployment notes.
+FinSight helps a team upload financial statements, review the extracted values,
+run audit rules and anomaly detection, and investigate results together. It
+shows the evidence and data coverage behind each finding so reviewers can make
+their own judgment. **An anomaly score is a signal for review, not a fraud
+probability or an audit opinion.**
 
-## Local setup
+## What it does
 
-1. Install Python 3.13, Node.js compatible with the frontend dependencies, and PostgreSQL.
-2. Install backend dependencies with `python -m pip install -r backend/requirements.txt`.
-3. Copy `backend/.env.example` to `backend/.env`, then set your local database
-   credentials and a random secret. Create the `finsight_db` database in PostgreSQL.
-4. From `frontend/`, run `npm ci`.
-5. Follow [WORKFLOW.md](WORKFLOW.md) to start the API, worker, and frontend.
+| Step | In FinSight |
+| --- | --- |
+| **Preview** | Validate an Excel workbook before analysis, including reporting years, units, missing metrics, and source cells. |
+| **Analyze** | Run financial audit rules and a saved Isolation Forest model; show skipped checks and filled model inputs. |
+| **Explain** | Explore rule findings and SHAP feature contributions, with coverage and limitations alongside the scores. |
+| **Review** | Assign findings, add notes, record decisions, and keep an audit trail in a shared workspace. |
+| **Report** | Download the generated PDF while preserving the original analysis evidence. |
 
-Environment files, logs, databases, uploaded workbooks, and generated reports are
-local data and must not be committed. The downloadable blank workbook template
-and saved ML model artifacts are application assets and are included.
+## How it fits together
 
-Some backend tests require a local `client_data.xlsx` at the project root. This
-workbook is excluded from version control; supply an appropriate test workbook
-before running those tests. See [backend/tests/README.md](backend/tests/README.md).
+```mermaid
+flowchart LR
+    A[Excel workbook] --> B[Preview and validation]
+    B --> C[API and job queue]
+    C --> D[Worker]
+    D --> E[Audit rules]
+    D --> F[Anomaly model]
+    E --> G[Findings and explanations]
+    F --> G
+    G --> H[Workspace review and PDF]
+    C <--> I[(PostgreSQL)]
+    D <--> I
+```
 
-## Deployment
+The React frontend talks to a FastAPI backend. A separate worker processes
+uploads, while PostgreSQL stores accounts, jobs, and review history. Saved
+analysis files need persistent storage shared by the API and worker.
 
-See [the deployment guide](docs/ORACLE_FREE_DEPLOYMENT.md). Set production secrets
-on the host; never put real credentials into the example environment files.
+## Run locally
+
+You need Python 3.13, Node.js, and PostgreSQL. The backend dependency list
+supports Python 3.11+, but 3.13 is the version used for the local workflow.
+
+1. Install backend packages: `python -m pip install -r backend/requirements.txt`.
+2. Copy `backend/.env.example` to `backend/.env`. Set `DATABASE_URL` for your
+   PostgreSQL database and replace `SECRET_KEY` with a random value.
+3. In `frontend/`, run `npm ci`.
+4. On Windows, run `./start-local.ps1` from the project root. The script starts
+   the API, worker, and frontend. Open <http://127.0.0.1:5173/app>.
+
+The [full workflow](WORKFLOW.md) includes manual startup commands and explains
+the upload, scoring, review, and reporting behavior. The blank workbook template
+is at [`frontend/public/data/FinSight_Template.xlsx`](frontend/public/data/FinSight_Template.xlsx).
+
+## Project map
+
+| Path | Purpose |
+| --- | --- |
+| [`frontend/`](frontend/) | React interface and client tests |
+| [`backend/`](backend/) | FastAPI app, worker, ML artifacts, and backend tests |
+| [`deploy/`](deploy/) and [`compose.yaml`](compose.yaml) | Container images and deployment configuration |
+| [`docs/`](docs/) | Deployment and implementation notes |
+
+## Check and deploy
+
+Run `python -m unittest discover -s tests -v` from `backend/` and `npm run build`
+from `frontend/`. Some backend tests require a local `client_data.xlsx` in the
+project root; it is excluded from Git because it is sample input data. See the
+[backend test notes](backend/tests/README.md).
+
+Start with the [deployment guide](docs/ORACLE_FREE_DEPLOYMENT.md) for the
+container setup. Production needs HTTPS, a persistent database and artifact
+volume, backups, and secrets set on the host. Keep `.env` files, uploaded
+workbooks, logs, and generated reports out of the repository.
