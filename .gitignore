@@ -23,7 +23,6 @@ deploy/backups/
 *.db
 *.sqlite
 *.sqlite3
-/client_data.xlsx
 
 # Editor and test caches
 .vscode/

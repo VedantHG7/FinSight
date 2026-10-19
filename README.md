@@ -59,6 +59,16 @@ supports Python 3.11+, but 3.13 is the version used for the local workflow.
 4. On Windows, run `./start-local.ps1` from the project root. The script starts
    the API, worker, and frontend. Open <http://127.0.0.1:5173/app>.
 
+For a teammate cloning this repository, the source code, saved ML model,
+`client_data.xlsx`, workbook template, dependency manifests, and deployment files
+are included. Install Python and Node dependencies using the commands above;
+installed packages and build output are generated on each machine. PostgreSQL
+and its data are separate from Git. Create a fresh database for a new deployment,
+or transfer a coordinated PostgreSQL backup and matching analysis storage if
+existing accounts, uploads, and reviews must be preserved. Generate new `.env`
+files from the examples and keep credentials private. The
+[deployment guide](docs/ORACLE_FREE_DEPLOYMENT.md) starts with a fresh database.
+
 The [full workflow](WORKFLOW.md) includes manual startup commands and explains
 the upload, scoring, review, and reporting behavior. The blank workbook template
 is at [`frontend/public/data/FinSight_Template.xlsx`](frontend/public/data/FinSight_Template.xlsx).
@@ -75,9 +85,8 @@ is at [`frontend/public/data/FinSight_Template.xlsx`](frontend/public/data/FinSi
 ## Check and deploy
 
 Run `python -m unittest discover -s tests -v` from `backend/` and `npm run build`
-from `frontend/`. Some backend tests require a local `client_data.xlsx` in the
-project root; it is excluded from Git because it is sample input data. See the
-[backend test notes](backend/tests/README.md).
+from `frontend/`. The repository includes `client_data.xlsx` in the project root
+for sample analysis and backend tests. See the [backend test notes](backend/tests/README.md).
 
 Start with the [deployment guide](docs/ORACLE_FREE_DEPLOYMENT.md) for the
 container setup. Production needs HTTPS, a persistent database and artifact
