@@ -8,7 +8,7 @@
         request_body {
             max_size 12MB
         }
-        reverse_proxy finsight-api:8000
+        reverse_proxy http://finsight-api.mangograss-4056ef91.eastasia.azurecontainerapps.io:8000
     }
 
     handle {
