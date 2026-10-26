@@ -32,6 +32,12 @@ jobs:
       - name: Push API image
         run: docker push "$REGISTRY/finsight-api:${GITHUB_SHA}"
 
+      - name: Build worker image
+        run: docker build -f deploy/worker.Dockerfile -t "$REGISTRY/finsight-worker:${GITHUB_SHA}" .
+
+      - name: Push worker image
+        run: docker push "$REGISTRY/finsight-worker:${GITHUB_SHA}"
+
       - name: Build frontend image
         run: docker build -f deploy/web.Dockerfile -t "$REGISTRY/finsight-web:${GITHUB_SHA}" .
 
