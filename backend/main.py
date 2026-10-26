@@ -15,10 +15,14 @@ app = FastAPI(
     debug=settings.DEBUG
 )
 
-# Configure CORS for all local development origins
+allowed_origins = list(settings.BACKEND_CORS_ORIGINS)
+if settings.PUBLIC_APP_URL not in allowed_origins:
+    allowed_origins.append(settings.PUBLIC_APP_URL)
+
+# Configure CORS for local development and the configured production URL.
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.BACKEND_CORS_ORIGINS,
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

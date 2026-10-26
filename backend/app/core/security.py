@@ -37,7 +37,10 @@ def verify_password(password: str, encoded: str) -> bool:
 
 def check_origin(request: Request):
     origin = request.headers.get('origin')
-    if origin and origin not in settings.BACKEND_CORS_ORIGINS:
+    allowed_origins = list(settings.BACKEND_CORS_ORIGINS)
+    if settings.PUBLIC_APP_URL not in allowed_origins:
+        allowed_origins.append(settings.PUBLIC_APP_URL)
+    if origin and origin not in allowed_origins:
         raise HTTPException(403, 'Request origin is not allowed.')
 
 
