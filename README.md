@@ -17,6 +17,15 @@ shows the evidence and data coverage behind each finding so reviewers can make
 their own judgment. **An anomaly score is a signal for review, not a fraud
 probability or an audit opinion.**
 
+## Live deployment
+
+**Status:** Live on Azure Container Apps  
+**Application:** [Open FinSight](https://finsight-web.mangograss-4056ef91.eastasia.azurecontainerapps.io)
+
+The hosted deployment uses Azure Container Apps for the web app, API, and
+analysis worker, with managed PostgreSQL and durable Azure Blob Storage for
+application data and generated reports.
+
 ## What it does
 
 | Step | In FinSight |
