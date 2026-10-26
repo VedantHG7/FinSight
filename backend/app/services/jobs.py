@@ -13,6 +13,7 @@ from app.core.config import settings
 from app.db.database import SessionLocal, engine
 from app.db.models import Analysis, AnalysisStatus, AnalysisJob, Client, Membership, AnalysisEvent
 from app.services.analysis_service import AnalysisService
+from app.services.workspace_storage import WorkspaceStorage
 
 log = logging.getLogger(__name__)
 MAX_ATTEMPTS = 3
@@ -31,6 +32,7 @@ def enqueue(db, user_id, upload):
     incoming.mkdir(parents=True, exist_ok=True)
     token = secrets.token_hex(24)
     path = incoming / (token + suffix)
+    storage = WorkspaceStorage()
     size = 0
     fingerprint = hashlib.sha256()
     try:
@@ -60,13 +62,16 @@ def enqueue(db, user_id, upload):
             client = Client(user_id=user_id, company_name='Pending validation')
             db.add(client)
             db.flush()
+        stored_path = storage.store_upload(path, path.name)
         analysis = Analysis(user_id=user_id, client_id=client.id, filename=filename,
-                            file_path=str(path.resolve()), status=AnalysisStatus.uploaded)
+                            file_path=stored_path, status=AnalysisStatus.uploaded)
         db.add(analysis)
         db.flush()
         db.add(AnalysisJob(analysis_id=analysis.id, file_hash=fingerprint.hexdigest()))
         db.add(AnalysisEvent(analysis_id=analysis.id, stage='Upload', status='queued', message='Workbook accepted and queued.'))
         db.commit()
+        if storage.enabled:
+            path.unlink(missing_ok=True)
         return analysis.id
     except Exception:
         db.rollback()

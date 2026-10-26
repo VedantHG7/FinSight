@@ -58,6 +58,8 @@ class Settings(BaseSettings):
         default=Path("./runtime/storage"),
         env="STORAGE_BASE_PATH"
     )
+    AZURE_STORAGE_CONNECTION_STRING: str = Field(default="", env="AZURE_STORAGE_CONNECTION_STRING")
+    AZURE_STORAGE_CONTAINER: str = Field(default="finsightdata", env="AZURE_STORAGE_CONTAINER")
     
     # Analysis Workspace
     ANALYSIS_WORKSPACE_PATH: Path = Field(

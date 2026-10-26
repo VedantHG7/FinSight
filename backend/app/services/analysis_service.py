@@ -21,6 +21,7 @@ from sqlalchemy.orm import Session
 
 from app.core.config import settings
 from app.services.financial_units import workbook_units
+from app.services.workspace_storage import WorkspaceStorage
 from app.db.models import Analysis, AnalysisEvent, AnalysisStatus, Client, User
 
 RULE_ROOT = Path(__file__).resolve().parent / "rule_engine"
@@ -120,6 +121,7 @@ class AnalysisService:
         self.checkpoint = checkpoint
         self.provenance = []
         self.workspace = Path(settings.ANALYSIS_WORKSPACE_PATH)
+        self.storage = WorkspaceStorage()
 
     def process_analysis(self, analysis_id: int) -> dict[str, Any]:
         analysis = self._analysis(analysis_id)
@@ -127,7 +129,7 @@ class AnalysisService:
         try:
             if self.checkpoint:
                 self.checkpoint('Validating workbook', 5)
-            raw_df = self._extract_workbook(Path(analysis.file_path))
+            raw_df = self._extract_workbook(self._input_path(analysis))
             pre_df = self._preprocess(raw_df)
             companies = sorted(pre_df['Company'].dropna().astype(str).str.strip().unique())
             if len(companies) != 1:
@@ -174,6 +176,7 @@ class AnalysisService:
             report = self._build_report(analysis.id, pre_df, rules, ml, xai)
             self._write_json(root / "report" / "audit_report.json", report)
             self._generate_pdf(root / "report" / f"audit_report_{analysis.id}.pdf", report)
+            self.storage.publish_workspace(analysis.id, root)
             analysis.status = AnalysisStatus.completed
             self._event(analysis.id, "Audit Report", "completed", "Generated detailed audit report PDF.")
             self.db.commit()
@@ -210,7 +213,7 @@ class AnalysisService:
             "columns": df.columns.tolist(),
             "rows": _records(df),
             "raw_columns": raw_df.columns.tolist(),
-            "financial_units": workbook_units(analysis.file_path),
+            "financial_units": workbook_units(self._input_path(analysis)),
             "raw_rows": _records(raw_df) if not raw_df.empty else [],
             "validation": {
                 "source_records": len(raw_df),
@@ -264,7 +267,14 @@ class AnalysisService:
         return analysis
 
     def _root(self, analysis_id: int) -> Path:
-        return self.workspace / str(analysis_id)
+        root = self.workspace / str(analysis_id)
+        self.storage.hydrate_workspace(analysis_id, root)
+        return root
+
+    def _input_path(self, analysis: Analysis) -> Path:
+        suffix = Path(analysis.filename).suffix.lower() or ".xlsx"
+        destination = self.workspace / "incoming" / f"{analysis.id}{suffix}"
+        return self.storage.materialize_upload(analysis.file_path, destination)
 
     def _event(self, analysis_id: int, stage: str, status: str, message: str, details: str | None = None) -> None:
         # Release this stage's transaction before the separate job session updates
